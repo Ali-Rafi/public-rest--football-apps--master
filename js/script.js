@@ -19,7 +19,6 @@ function getListTeams() {
     fetch(teamEndPoin, fetchHeader)
         .then(response => response.json())
         .then(resJson => {
-            console.log(resJson.teams);
             let teams = "";
             resJson.teams.forEach(team => {
                 teams += `
@@ -47,7 +46,74 @@ function getListTeams() {
 
 function showTeamInfo(id) {
     let url = baseUrl + "teams/" + id;
-    contents.innerHTML = "Ini adalah informasi detil dari tim dengan id " + url;
+    fetch(url, fetchHeader)
+        .then(response => response.json())
+        .then(resJson => {
+            let data = `
+                <div class="row">
+                    <div class="col s6 center">
+                        <br><br><br><br>
+                        <h3 class="header center orange-text">${resJson.name}</h3>
+                        <img class="responsive-img" src="${resJson.crestUrl}" width="72px">
+                    </div>
+                    <div class="col s6">
+                        <div class="card teal darken-1 hoverable">
+                            <div class="card-content white-text">
+                                <span class="card-title" style="font-weight:bold;">${resJson.name}</span>
+                                <p>Didirikan pada tahun ${resJson.founded} yang bermarkas di ${resJson.venue}.</p>
+                                <p>Ciri khas dari tim ini adalah warna pakaiannya terdiri dari ${resJson.clubColors}</p>
+                            </div>
+                            <div class="card-action white-text">
+                                <p class="left-align">Alamat : ${resJson.address}</p>
+                                <p class="left-align">Website : ${resJson.website}</p>
+                                <font class="left-align">Phone : ${resJson.phone}</font> | 
+                                <font class="right-align">Email : ${resJson.email}</font>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            let i = 1;
+            let tabel = "";
+            resJson.squad.forEach(da => {
+                tabel += `
+                    <tr>
+                        <td>${i++}</td>
+                        <td>${da.name}</td>
+                        <td>${da.position}</td>
+                        <td>${da.dateOfBirth}</td>
+                        <td>${da.countryOfBirth}</td>
+                        <td>${da.nationality}</td>
+                        <td>${da.role}</td>
+                    </tr>
+
+                `;
+            });
+            contents.innerHTML = data +
+                `
+                <div class="card blue-grey darken-1">
+                        <div class="card-content white-text">
+                            <span class="card-title" style="font-weight:bold;">Daftar Pemain</span>
+                            <table class="stripped responsive-table">
+                                <thead>
+                                    <th>No.</th>
+                                    <th>Nama Pemain</th>
+                                    <th>Posisi</th>
+                                    <th>Tanggal Lahir</th>
+                                    <th>Negara Kelahiran</th>
+                                    <th>Kebangsaan</th>
+                                    <th>Status</th>
+                                </thead>
+                                <tbody>
+                                    ${tabel}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+            `;
+        }).catch(err => {
+            console.error(err);
+        })
 }
 
 function getListStandings() {
